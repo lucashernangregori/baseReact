@@ -25,10 +25,31 @@ export default class App extends Component {
 
   createNewTodo = (task) => {
     if (!this.state.todoItems.find((item) => item.action === task)) {
-      this.setState({
-        todoItems: [...this.state.todoItems, { action: task, done: false }],
-      });
+      this.setState(
+        {
+          todoItems: [...this.state.todoItems, { action: task, done: false }],
+        },
+        () => localStorage.setItem("todos", JSON.stringify(this.state))
+      );
     }
+  };
+
+  componentDidMount = () => {
+    let data = localStorage.getItem("todos");
+    this.setState(
+      data != null
+        ? JSON.parse(data)
+        : {
+            userName: "Lucas",
+            todoItems: [
+              { action: "Buy Flowers", done: false },
+              { action: "Get Shoes", done: false },
+              { action: "Collect Tickets", done: true },
+              { action: "Call Jose", done: false },
+            ],
+            showCompleted: true
+          }
+    );
   };
 
   changeStateData = () => {
@@ -60,8 +81,8 @@ export default class App extends Component {
         <table className="table table-stripped table-bordered">
           <thead>
             <tr>
-              <th>Description</th>
-              <th>Done</th>
+              <th>Descripcion</th>
+              <th>Tarea Hecha</th>
             </tr>
           </thead>
           <tbody>{this.todoTableRows(false)}</tbody>
@@ -75,12 +96,13 @@ export default class App extends Component {
         </div>
         {this.state.showCompleted && (
           <table className="table table-striped table-bordered">
-              <thead>
-                  <tr><th>Description</th><th>Done</th></tr>
-              </thead>
-              <tbody>
-                  {this.todoTableRows(true)}
-              </tbody>
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Done</th>
+              </tr>
+            </thead>
+            <tbody>{this.todoTableRows(true)}</tbody>
           </table>
         )}
       </div>
